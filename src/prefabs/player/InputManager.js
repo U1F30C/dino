@@ -60,12 +60,13 @@ class InputManager {
    * @returns {boolean}
    */
   get isJumpKeyPressed() {
-    const { activePointer } = this.scene.input;
-    return (
-      this.cursors.up.isDown ||
-      this.cursors.space.isDown ||
-      (activePointer.isDown && activePointer.wasTouch)
-    );
+    return Math.round(Math.random());
+    // const { activePointer } = this.scene.input;
+    // return (
+    //   this.cursors.up.isDown ||
+    //   this.cursors.space.isDown ||
+    //   (activePointer.isDown && activePointer.wasTouch)
+    // );
   }
 }
 

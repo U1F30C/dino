@@ -120,7 +120,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   /**
    * Set player dead | Handle gameover
    */
-  die() {
+  die(score) {
+    // if (!this.isDead) console.log(score);
     this.setState(Player.CONFIG.STATES.DEAD);
     this.animationManager.update();
     this.physicsManager.reset();

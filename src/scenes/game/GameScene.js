@@ -81,15 +81,23 @@ class GameScene extends Phaser.Scene {
     this.ui = new UI(this);
     this.intro = new Intro(this.events);
 
-    this.player = new Player(this);
+    this.players = Array.from(Array(10)).map(() => new Player(this));
 
     this.horizon = new Horizon(this);
     this.ground = this.horizon.ground;
     this.obstacles = this.horizon.obstacles;
     this.nightMode = this.horizon.nightMode;
 
-    this.physics.add.collider(this.player, this.ground);
-    this.physics.add.overlap(this.player, this.obstacles, this.onPlayerHitObstacle, null, this);
+    this.players.forEach((player, i) => {
+      this.physics.add.collider(player, this.ground);
+      this.physics.add.overlap(
+        player,
+        this.obstacles,
+        () => this.onPlayerHitObstacle(i),
+        null,
+        this,
+      );
+    });
 
     this.resizeManager.resize(this.scale.gameSize, this.scale.parentSize);
 
@@ -102,6 +110,13 @@ class GameScene extends Phaser.Scene {
   }
 
   update() {
+    const obstacle = this.obstacles.getLast(true) || { x: this.players[0].x, y: this.players[0].y };
+    this._score = Phaser.Math.Distance.Between(
+      this.players[0].x,
+      this.players[0].y,
+      obstacle.x,
+      obstacle.y,
+    );
     const { gameSize } = this.scale;
     const isMobile = gameSize.width === CONFIG.GAME.WIDTH.PORTRAIT;
 
@@ -109,7 +124,7 @@ class GameScene extends Phaser.Scene {
     this.ui.update(this.isPlaying, gameSize, this.score);
 
     if (this.isPlaying) {
-      this.player.update();
+      this.players.forEach(player => player.update());
 
       if (this.intro.isComplete) {
         const { GAME, NIGHTMODE } = GameScene.CONFIG;
@@ -140,8 +155,11 @@ class GameScene extends Phaser.Scene {
   /**
    * Handle player collision with obstacle
    */
-  onPlayerHitObstacle() {
-    this.events.emit(CONFIG.EVENTS.GAME_OVER, this.score, this.highScore);
+  onPlayerHitObstacle(id) {
+    this.players[id].die(this.score);
+    // this.players.splice(id, 1);
+    // console.log(id);
+    // this.events.emit(CONFIG.EVENTS.GAME_OVER, this.score, this.highScore, id);
   }
 
   /**
@@ -241,7 +259,8 @@ class GameScene extends Phaser.Scene {
    * @returns {number} - Current score
    */
   get score() {
-    return Math.ceil(this.distance * GameScene.CONFIG.GAME.SCORE.COEFFICIENT);
+    return this._score;
+    // return Math.ceil(this.distance * GameScene.CONFIG.GAME.SCORE.COEFFICIENT);
   }
 
   /**
