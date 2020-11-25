@@ -12,6 +12,7 @@ class GeneticAlgorithm {
     this.mutationRate = mutationRate;
     this.problem = problem;
     this.populate(populationSize, problem);
+    this.mostFit = this.population[0];
   }
   populate(populationSize, problem) {
     const { dimentions, min, max } = problem;
@@ -23,31 +24,27 @@ class GeneticAlgorithm {
   evolve() {
     //calculate fitness before this
     const currentMostFit = maxBy(this.population, i => i.fitness);
-    if (!this.mostFit || currentMostFit.fitness > this.mostFit.fitness)
-      this.mostFit = currentMostFit;
+    if (currentMostFit.fitness > this.mostFit.fitness) this.mostFit = currentMostFit;
     this.population = this.population.sort((a, b) => a.fitness - b.fitness);
     let offspring = [];
-    while (offspring.length < this.population.length) {
+    while (offspring.length < Math.floor(this.population.length / 2)) {
       const parents = sampleSize(this.population.slice(this.population.length / 2), 2);
       const children = this.breed(parents);
 
-      offspring = offspring.concat(children);
+      offspring.push(children[0]);
+
+      offspring.push(children[1]);
     }
     this.mutate();
-    this.population = offspring;
+    this.population = offspring.concat(this.population.slice(offspring.length));
   }
   breed(parents) {
-    const breedingPoint = random(1, this.problem.dimentions);
-    // const genome = [];
-    // for (let i = 0; i < this.problem.dimentions; i++) {
-    //   genome.push(sample(parents).genome[i]);
-    // }
-    const genome1 = parents[0].genome
-      .slice(0, breedingPoint)
-      .concat(parents[0].genome.slice(breedingPoint));
-    const genome2 = parents[1].genome
-      .slice(0, breedingPoint)
-      .concat(parents[0].genome.slice(breedingPoint));
+    const genome1 = [];
+    const genome2 = [];
+    for (let i = 0; i < this.problem.dimentions; i++) {
+      genome1.push(sample(parents).genome[i]);
+      genome2.push(sample(parents).genome[i]);
+    }
     return [new Individual(genome1), new Individual(genome2)];
   }
   mutate() {
@@ -62,18 +59,18 @@ class GeneticAlgorithm {
 }
 
 function fitness(genome) {
-  // let sum = 0;
-  // genome.forEach(gene => (sum -= gene ** 2));
-  // return sum;
-  let z = genome.length * 10;
-  genome.forEach(gene => {
-    z = z + gene ** 2 - 10 * Math.cos(2 * Math.PI * gene);
-  });
-  return -z;
+  let sum = 0;
+  genome.forEach(gene => (sum -= gene ** 2));
+  return sum;
+  // let z = genome.length * 10;
+  // genome.forEach(gene => {
+  //   z = z + gene ** 2 - 10 * Math.cos(2 * Math.PI * gene);
+  // });
+  // return -z;
 }
 const ga = new GeneticAlgorithm(32, { min: -5.12, max: 5.12, dimentions: 8 }, 0.2);
 for (let i = 0; i < 20000; i++) {
   ga.population.forEach(individual => (individual.fitness = fitness(individual.genome)));
   ga.evolve();
-  console.log(-ga.mostFit.fitness);
 }
+console.log(-ga.mostFit.fitness);
