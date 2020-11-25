@@ -24,6 +24,7 @@
     "lint:staged": "lint-staged --relative"
   },
   "dependencies": {
+    "lodash": "^4.17.20",
     "phaser": "^3.24.1"
   },
   "devDependencies": {
