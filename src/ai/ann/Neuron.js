@@ -1,7 +1,7 @@
-import { dot, activations } from "./math";
-import { times } from "lodash";
+const { dot, activations } = require('./math');
+const { times } = require('lodash');
 
-function Neuron(inputQuantity = 1, type = "linear") {
+function Neuron(inputQuantity = 1, type = 'linear') {
   let weights = times(inputQuantity + 1, Math.random);
   let neuron = {
     weights,
@@ -18,8 +18,7 @@ function Neuron(inputQuantity = 1, type = "linear") {
 
   function predict(inputs) {
     inputs = [...inputs, -1];
-    while (inputs.length > neuron.weights.length)
-      neuron.weights.push(Math.random());
+    while (inputs.length > neuron.weights.length) neuron.weights.push(Math.random());
     neuron.inputs = inputs;
     neuron.output = activations[type].function(_predict(inputs));
 
@@ -35,4 +34,4 @@ function Neuron(inputQuantity = 1, type = "linear") {
   return neuron;
 }
 
-export { Neuron };
+module.exports = { Neuron };

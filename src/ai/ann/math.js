@@ -1,4 +1,4 @@
-import { sumBy } from "lodash";
+const { sumBy } = require('lodash');
 
 function dot(v1, v2) {
   let result = 0;
@@ -21,7 +21,7 @@ function generateLine(neuron) {
 }
 
 function mse(arr) {
-  return sumBy(arr, (x) => Math.pow(x, 2)) / arr.length;
+  return sumBy(arr, x => Math.pow(x, 2)) / arr.length;
 }
 
 const activations = {
@@ -66,4 +66,4 @@ const activations = {
   },
 };
 
-export { dot, activations, mse };
+module.exports = { dot, activations, mse };
