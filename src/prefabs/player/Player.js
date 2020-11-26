@@ -125,6 +125,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.setState(Player.CONFIG.STATES.DEAD);
     this.animationManager.update();
     this.physicsManager.reset();
+    this.visible = false;
 
     // set dead sprite pos to match run|jump sprite pos (substract 4px)
     this.setY(this.y - 4);
@@ -134,6 +135,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
    * Reset player | Handle game restart
    */
   reset() {
+    this.visible = true;
     this.setState(Player.CONFIG.STATES.IDLING);
     this.animationManager.update();
     this.setY(Player.CONFIG.POS.Y);
