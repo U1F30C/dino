@@ -1,13 +1,21 @@
 const { maxBy, random, times, sample, sampleSize } = require('lodash');
 
-export class Individual {
+class Individual {
   constructor(genome) {
     this.fitness = 0;
-    this.genome = genome;
+    this._genome = genome.map(gene => ({ value: gene }));
+  }
+  set genome(genome) {
+    genome.forEach((gene, i) => {
+      this._genome[i].value = gene;
+    });
+  }
+  get genome() {
+    return this._genome.map(gene => gene.value);
   }
 }
 
-export class GeneticAlgorithm {
+class GeneticAlgorithm {
   constructor(populationSize, problem, mutationRate = 0.001) {
     this.mutationRate = mutationRate;
     this.problem = problem;
@@ -26,17 +34,12 @@ export class GeneticAlgorithm {
     const currentMostFit = maxBy(this.population, i => i.fitness);
     if (currentMostFit.fitness > this.mostFit.fitness) this.mostFit = currentMostFit;
     this.population = this.population.sort((a, b) => a.fitness - b.fitness);
-    let offspring = [];
-    while (offspring.length < Math.floor(this.population.length / 2)) {
-      const parents = sampleSize(this.population.slice(this.population.length / 2), 2);
-      const children = this.breed(parents);
-
-      offspring.push(children[0]);
-
-      offspring.push(children[1]);
+    const bestHalfStart = Math.floor(this.population.length / 2);
+    for (let i = 0; i < bestHalfStart; i += 2) {
+      const parents = sampleSize(this.population.slice(bestHalfStart), 2);
+      [this.population[i].genome, this.population[i + 1].genome] = this.breed(parents);
     }
     this.mutate();
-    this.population = offspring.concat(this.population.slice(offspring.length));
   }
   breed(parents) {
     const genome1 = [];
@@ -45,7 +48,7 @@ export class GeneticAlgorithm {
       genome1.push(sample(parents).genome[i]);
       genome2.push(sample(parents).genome[i]);
     }
-    return [new Individual(genome1), new Individual(genome2)];
+    return [genome1, genome2];
   }
   mutate() {
     this.population.forEach(individual => {
@@ -58,19 +61,19 @@ export class GeneticAlgorithm {
   }
 }
 
-// function fitness(genome) {
-//   let sum = 0;
-//   genome.forEach(gene => (sum -= gene ** 2));
-//   return sum;
-//   // let z = genome.length * 10;
-//   // genome.forEach(gene => {
-//   //   z = z + gene ** 2 - 10 * Math.cos(2 * Math.PI * gene);
-//   // });
-//   // return -z;
-// }
-// const ga = new GeneticAlgorithm(32, { min: -5.12, max: 5.12, dimentions: 8 }, 0.2);
-// for (let i = 0; i < 20000; i++) {
-//   ga.population.forEach(individual => (individual.fitness = fitness(individual.genome)));
-//   ga.evolve();
-// }
-// console.log(-ga.mostFit.fitness);
+function fitness(genome) {
+  let sum = 0;
+  genome.forEach(gene => (sum -= gene ** 2));
+  return sum;
+  // let z = genome.length * 10;
+  // genome.forEach(gene => {
+  //   z = z + gene ** 2 - 10 * Math.cos(2 * Math.PI * gene);
+  // });
+  // return -z;
+}
+const ga = new GeneticAlgorithm(8, { min: -5.12, max: 5.12, dimentions: 8 }, 0.01);
+for (let i = 0; i < 2000; i++) {
+  ga.population.forEach(individual => (individual.fitness = fitness(individual.genome)));
+  ga.evolve();
+}
+console.log(-ga.mostFit.fitness);
