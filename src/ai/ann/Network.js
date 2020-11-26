@@ -69,46 +69,46 @@ function Network(layerDescriptors, learningRate = 0.5) {
   return network;
 }
 
-// export { Neuron };
+module.exports = { Network };
 
-const network = Network(
-  [
-    [2],
-    [3, 'sigmoid'],
-    [1, 'sigmoid'],
-  ],
-  0.9,
-);
-const problemSize = weightsForArchitecture([2, 3, 1]);
-const weights = times(problemSize, () => ({ value: Math.random() }));
-network.distributeWights(weights);
+// const network = Network(
+//   [
+//     [2],
+//     [3, 'sigmoid'],
+//     [1, 'sigmoid'],
+//   ],
+//   0.9,
+// );
+// const problemSize = weightsForArchitecture([2, 3, 1]);
+// const weights = times(problemSize, () => ({ value: Math.random() }));
+// network.distributeWights(weights);
 
-const inputs = [
-  [0, 0],
-  [0, 1],
-  [1, 0],
-  [1, 1],
-];
-const outputs = [[0], [1], [1], [0]];
+// const inputs = [
+//   [0, 0],
+//   [0, 1],
+//   [1, 0],
+//   [1, 1],
+// ];
+// const outputs = [[0], [1], [1], [0]];
 
-network.trainingData = inputs.map((inputSet, i) => [inputSet, outputs[i]]);
+// network.trainingData = inputs.map((inputSet, i) => [inputSet, outputs[i]]);
 
-let actualOutputs;
-let i = 0;
-while (!network.converges(0.1)) {
-  network.train();
-  actualOutputs = inputs
-    .map(input =>
-      network
-        .forward(input)
-        .map(x => Math.round(x))
-        .join(','),
-    )
-    .join(';');
-  if (i == 10000) {
-    console.log(actualOutputs);
-    console.log(network.error);
-    i = 0;
-  }
-  i++;
-}
+// let actualOutputs;
+// let i = 0;
+// while (!network.converges(0.1)) {
+//   network.train();
+//   actualOutputs = inputs
+//     .map(input =>
+//       network
+//         .forward(input)
+//         .map(x => Math.round(x))
+//         .join(','),
+//     )
+//     .join(';');
+//   if (i == 10000) {
+//     console.log(actualOutputs);
+//     console.log(network.error);
+//     i = 0;
+//   }
+//   i++;
+// }

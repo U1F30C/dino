@@ -61,19 +61,22 @@ class GeneticAlgorithm {
   }
 }
 
-function fitness(genome) {
-  let sum = 0;
-  genome.forEach(gene => (sum -= gene ** 2));
-  return sum;
-  // let z = genome.length * 10;
-  // genome.forEach(gene => {
-  //   z = z + gene ** 2 - 10 * Math.cos(2 * Math.PI * gene);
-  // });
-  // return -z;
-}
-const ga = new GeneticAlgorithm(8, { min: -5.12, max: 5.12, dimentions: 8 }, 0.01);
-for (let i = 0; i < 2000; i++) {
-  ga.population.forEach(individual => (individual.fitness = fitness(individual.genome)));
-  ga.evolve();
-}
-console.log(-ga.mostFit.fitness);
+module.exports = { GeneticAlgorithm };
+
+// function fitness(genome) {
+//   // let sum = 0;
+//   // genome.forEach(gene => (sum -= gene ** 2));
+//   // return sum;
+//   let z = genome.length * 10;
+//   genome.forEach(gene => {
+//     z = z + gene ** 2 - 10 * Math.cos(2 * Math.PI * gene);
+//   });
+//   return -z;
+// }
+// const ga = new GeneticAlgorithm(200, { min: -5.12, max: 5.12, dimentions: 20 }, 0.001);
+// for (let i = 0; i < 4000; i++) {
+//   ga.population.forEach(individual => (individual.fitness = fitness(individual.genome)));
+//   ga.evolve();
+//   console.log(-ga.mostFit.fitness);
+// }
+// console.log(-ga.mostFit.fitness);
