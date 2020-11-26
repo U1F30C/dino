@@ -41,7 +41,7 @@ function Network(layerDescriptors, learningRate = 0.5) {
         network.layers[l].neurons.forEach((neuron, i) => {
           neuron.error = sum(
             network.layers[l + 1].neurons.map(function (n) {
-              return n.weights[i] * n.delta;
+              return n.weights[i].value * n.delta;
             }),
           );
 

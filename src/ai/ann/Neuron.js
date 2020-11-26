@@ -2,7 +2,7 @@ const { dot, activations } = require('./math');
 const { times } = require('lodash');
 
 function Neuron(inputQuantity = 1, type = 'linear') {
-  let weights = times(inputQuantity + 1, Math.random);
+  let weights = times(inputQuantity + 1, () => ({ value: Math.random() }));
   let neuron = {
     weights,
     predict,
@@ -13,12 +13,15 @@ function Neuron(inputQuantity = 1, type = 'linear') {
   };
 
   function _predict(inputs) {
-    return dot(neuron.weights, inputs);
+    return dot(
+      neuron.weights.map(w => w.value),
+      inputs,
+    );
   }
 
   function predict(inputs) {
     inputs = [...inputs, -1];
-    while (inputs.length > neuron.weights.length) neuron.weights.push(Math.random());
+    while (inputs.length > neuron.weights.length) neuron.weights.push({ value: Math.random() });
     neuron.inputs = inputs;
     neuron.output = activations[type].function(_predict(inputs));
 
@@ -27,7 +30,7 @@ function Neuron(inputQuantity = 1, type = 'linear') {
 
   function adjust(delta) {
     for (let i = 0; i < neuron.weights.length; i++) {
-      neuron.weights[i] += delta * neuron.inputs[i];
+      neuron.weights[i].value += delta * neuron.inputs[i];
     }
   }
 
