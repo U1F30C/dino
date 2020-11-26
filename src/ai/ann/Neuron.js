@@ -20,8 +20,8 @@ function Neuron(inputQuantity = 1, type = 'linear') {
   }
 
   function predict(inputs) {
+    fill(inputs.length);
     inputs = [...inputs, -1];
-    while (inputs.length > neuron.weights.length) neuron.weights.push({ value: Math.random() });
     neuron.inputs = inputs;
     neuron.output = activations[type].function(_predict(inputs));
 
@@ -32,6 +32,10 @@ function Neuron(inputQuantity = 1, type = 'linear') {
     for (let i = 0; i < neuron.weights.length; i++) {
       neuron.weights[i].value += delta * neuron.inputs[i];
     }
+  }
+
+  function fill(inputsLength) {
+    while (inputsLength >= neuron.weights.length) neuron.weights.push({ value: Math.random() });
   }
 
   return neuron;

@@ -66,4 +66,12 @@ const activations = {
   },
 };
 
-module.exports = { dot, activations, mse };
+function weightsForArchitecture(arch) {
+  let sum = 0;
+  for (let i = 0; i < arch.length - 1; i++) {
+    sum += (arch[i] + 1) * arch[i + 1];
+  }
+  return sum;
+}
+
+module.exports = { dot, activations, mse, weightsForArchitecture };

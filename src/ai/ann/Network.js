@@ -1,11 +1,12 @@
 const { Layer } = require('./Layer');
-const { delta, mse } = require('./math');
-const { sum } = require('lodash');
+const { delta, mse, weightsForArchitecture } = require('./math');
+const { sum, times } = require('lodash');
 
 function Network(layerDescriptors, learningRate = 0.5) {
   let layers = [];
   let trainingData = [];
-  layers = layerDescriptors.map(Layer);
+  layers = layerDescriptors.slice(1).map(Layer);
+  const architecture = layerDescriptors.map(([n]) => n);
 
   const network = {
     layers,
@@ -14,7 +15,16 @@ function Network(layerDescriptors, learningRate = 0.5) {
     trainingData,
     train,
     converges,
+    distributeWights,
   };
+  function distributeWights(weightObjects) {
+    let offset = 0;
+    for (let i = 1; i < architecture.length; i++) {
+      const currentLayerWeightCount = architecture[i] * (architecture[i - 1] + 1);
+      layers[i - 1].distributeWights(weightObjects.slice(offset, offset + currentLayerWeightCount));
+      offset += currentLayerWeightCount;
+    }
+  }
 
   function forward(inputs) {
     const layerOutputs = [layers[0].predict(inputs)];
@@ -63,11 +73,16 @@ function Network(layerDescriptors, learningRate = 0.5) {
 
 const network = Network(
   [
+    [2],
     [3, 'sigmoid'],
     [1, 'sigmoid'],
   ],
   0.9,
 );
+const problemSize = weightsForArchitecture([2, 3, 1]);
+const weights = times(problemSize, () => ({ value: Math.random() }));
+network.distributeWights(weights);
+
 const inputs = [
   [0, 0],
   [0, 1],
@@ -90,7 +105,7 @@ while (!network.converges(0.1)) {
         .join(','),
     )
     .join(';');
-  if (i == 1000) {
+  if (i == 10000) {
     console.log(actualOutputs);
     console.log(network.error);
     i = 0;
