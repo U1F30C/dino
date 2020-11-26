@@ -157,9 +157,8 @@ class GameScene extends Phaser.Scene {
    */
   onPlayerHitObstacle(id) {
     this.players[id].die(this.score);
-    // this.players.splice(id, 1);
-    // console.log(id);
-    // this.events.emit(CONFIG.EVENTS.GAME_OVER, this.score, this.highScore, id);
+    if (this.players.every(player => player.isDead))
+      this.events.emit(CONFIG.EVENTS.GAME_OVER, this.score, this.highScore, id);
   }
 
   /**
@@ -259,8 +258,7 @@ class GameScene extends Phaser.Scene {
    * @returns {number} - Current score
    */
   get score() {
-    return this._score;
-    // return Math.ceil(this.distance * GameScene.CONFIG.GAME.SCORE.COEFFICIENT);
+    return Math.ceil(this.distance * GameScene.CONFIG.GAME.SCORE.COEFFICIENT);
   }
 
   /**
