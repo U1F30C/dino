@@ -22,11 +22,10 @@ class Individual {
 }
 
 class GeneticAlgorithm {
-  constructor(populationSize, problem, mutationRate = 0.001) {
+  constructor(populationSize, problem, mutationRate = 0.01) {
     this.mutationRate = mutationRate;
     this.problem = problem;
     this.populate(populationSize, problem);
-    this.mostFit = this.population[0];
   }
   populate(populationSize, problem) {
     const { dimentions, min, max } = problem;
@@ -34,17 +33,25 @@ class GeneticAlgorithm {
       const genome = times(dimentions, () => random(min, max, true));
       return new Individual(genome);
     });
+
+    const genome = times(dimentions, () => random(min, max, true));
+    this.mostFit = new Individual(genome);
   }
   evolve() {
     //calculate fitness before this
     const currentMostFit = maxBy(this.population, i => i.fitness);
-    if (currentMostFit.fitness > this.mostFit.fitness) this.mostFit = currentMostFit;
+    if (currentMostFit.fitness > this.mostFit.fitness) {
+      this.mostFit.genome = currentMostFit.genome;
+      this.mostFit.fitness = currentMostFit.fitness;
+    }
     this.population = this.population.sort((a, b) => a.fitness - b.fitness);
     const bestHalfStart = Math.floor(this.population.length / 2);
     for (let i = 0; i < bestHalfStart; i += 2) {
       const parents = sampleSize(this.population.slice(bestHalfStart), 2);
       [this.population[i].genome, this.population[i + 1].genome] = this.breed(parents);
     }
+    this.population[0].genome = this.mostFit.genome;
+    this.population[0].fitness = this.mostFit.fitness;
     this.mutate();
   }
   breed(parents) {
