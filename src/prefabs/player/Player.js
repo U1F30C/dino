@@ -19,14 +19,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
    * @param {number} [x=Player.CONFIG.POS.INITIAL_X] - The horizontal position of this Player in the world
    * @param {number} [y=Player.CONFIG.POS.Y] - The vertical position of this Player in the world
    */
-  constructor(scene, x = Player.CONFIG.POS.INITIAL_X, y = Player.CONFIG.POS.Y) {
+  constructor(scene, x = Player.CONFIG.POS.INITIAL_X, y = Player.CONFIG.POS.Y, trainingData) {
     super(scene, x, y, 'dino', Player.CONFIG.FRAMES.INITIAL);
 
+    this.fitness = trainingData._fitness;
+    this.brain = trainingData.brain;
+    
     this.isInitialJump = true;
 
     // Init managers
     this.physicsManager = new PhysicsManager(this);
-    this.inputManager = new InputManager(this);
+    this.inputManager = new InputManager(this, this.brain);
     this.animationManager = new AnimationManager(this);
 
     // Init image
@@ -121,7 +124,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
    * Set player dead | Handle gameover
    */
   die(score) {
-    // if (!this.isDead) console.log(score);
+    this.fitness.value = score;
     this.setState(Player.CONFIG.STATES.DEAD);
     this.animationManager.update();
     this.physicsManager.reset();

@@ -11,6 +11,8 @@ import Intro from './Intro';
 import Player from '../../prefabs/player/Player';
 import Horizon from '../../prefabs/horizon/Horizon';
 import isTelegramMode from '../../utils/telegram/isTelegramMode';
+import { Trainer } from './../../ai/Trainer';
+import { times } from 'lodash';
 
 /**
  * Main game scene
@@ -81,7 +83,11 @@ class GameScene extends Phaser.Scene {
     this.ui = new UI(this);
     this.intro = new Intro(this.events);
 
-    this.players = Array.from(Array(10)).map(() => new Player(this));
+    const populationSize = 10;
+    this.trainer = new Trainer(populationSize);
+    this.players = times(populationSize, i => {
+      return new Player(this, void 0, void 0, this.trainer.population[i]);
+    });
 
     this.horizon = new Horizon(this);
     this.ground = this.horizon.ground;
@@ -111,12 +117,12 @@ class GameScene extends Phaser.Scene {
 
   update() {
     const obstacle = this.obstacles.getLast(true) || { x: this.players[0].x, y: this.players[0].y };
-    this._score = Phaser.Math.Distance.Between(
-      this.players[0].x,
-      this.players[0].y,
-      obstacle.x,
-      obstacle.y,
-    );
+    this.players.forEach(player => {
+      const xDistanceToNextObstacle = obstacle.x - player.x;
+      const yDistanceToNextObstacle = obstacle.y - player.y;
+      const gapBetweenObstacles = this.obstacles.getGap;
+      player.perception = [yDistanceToNextObstacle, xDistanceToNextObstacle];
+    });
     const { gameSize } = this.scale;
     const isMobile = gameSize.width === CONFIG.GAME.WIDTH.PORTRAIT;
 
@@ -224,6 +230,8 @@ class GameScene extends Phaser.Scene {
    * Handle gameover
    */
   onGameOver() {
+    this.trainer.train();
+    console.log(this.trainer.population[0].genome);
     const { width: gameWidth, height: gameHeight } = this.scale.gameSize;
 
     this.isPlaying = false;

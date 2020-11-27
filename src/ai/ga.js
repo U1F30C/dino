@@ -30,10 +30,10 @@ class GeneticAlgorithm {
   }
   populate(populationSize, problem) {
     const { dimentions, min, max } = problem;
-    this.population = times(
-      populationSize,
-      () => new Individual(times(dimentions, () => random(min, max, true))),
-    );
+    this.population = times(populationSize, () => {
+      const genome = times(dimentions, () => random(min, max, true));
+      return new Individual(genome);
+    });
   }
   evolve() {
     //calculate fitness before this

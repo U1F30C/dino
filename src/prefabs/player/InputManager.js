@@ -7,10 +7,12 @@ class InputManager {
    * Creates an instance of InputManager
    * @param {Player} player - The Player to which this InputManager belongs
    */
-  constructor(player) {
+  constructor(player, brain) {
     this.player = player;
+    this.brain = brain;
     this.scene = player.scene;
     this.cursors = player.scene.input.keyboard.createCursorKeys();
+    [this._shouldGoUp, this.shouldGoDown] = [0, 0];
   }
 
   /**
@@ -18,6 +20,10 @@ class InputManager {
    */
   update() {
     const { player } = this;
+
+    [this._shouldGoUp, this.shouldGoDown] = this.brain
+      .forward(this.player.perception)
+      .map(Math.round);
 
     if (player.isDead) {
       return;
@@ -51,7 +57,7 @@ class InputManager {
    * @returns {boolean}
    */
   get isDuckKeyPressed() {
-    return this.cursors.down.isDown;
+    return this._shouldGoDown;
   }
 
   /**
@@ -60,13 +66,7 @@ class InputManager {
    * @returns {boolean}
    */
   get isJumpKeyPressed() {
-    return Math.round(Math.random());
-    // const { activePointer } = this.scene.input;
-    // return (
-    //   this.cursors.up.isDown ||
-    //   this.cursors.space.isDown ||
-    //   (activePointer.isDown && activePointer.wasTouch)
-    // );
+    return this._shouldGoUp;
   }
 }
 
