@@ -2,7 +2,7 @@ const { maxBy, random, times, sample, sampleSize } = require('lodash');
 
 class Individual {
   constructor(genome) {
-    this.fitness = 0;
+    this._fitness = { value: 0 };
     this._genome = genome.map(gene => ({ value: gene }));
   }
   set genome(genome) {
@@ -12,6 +12,12 @@ class Individual {
   }
   get genome() {
     return this._genome.map(gene => gene.value);
+  }
+  set fitness(fitness) {
+    this._fitness.value = fitness;
+  }
+  get fitness() {
+    return this._fitness.value;
   }
 }
 
