@@ -208,6 +208,8 @@ class GameScene extends Phaser.Scene {
    * Handle game restart
    */
   onGameRestart() {
+    this.trainer.train();
+    console.log(this.trainer.ga.mostFit.genome, this.trainer.ga.mostFit.fitness);
     this.isPlaying = true;
     this.readyToRestart = false;
 
@@ -230,8 +232,6 @@ class GameScene extends Phaser.Scene {
    * Handle gameover
    */
   onGameOver() {
-    this.trainer.train();
-    console.log(this.trainer.population[0].genome);
     const { width: gameWidth, height: gameHeight } = this.scale.gameSize;
 
     this.isPlaying = false;
