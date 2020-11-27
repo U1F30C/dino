@@ -41,15 +41,16 @@ class InputManager {
     }
 
     if (!scene.isPlaying) {
-      if (this.isEnterKeyJustUp) {
-        scene.events.emit(CONFIG.EVENTS.GAME_RESTART);
-      }
+      scene.events.emit(CONFIG.EVENTS.GAME_RESTART);
+      // if (this.isEnterKeyJustUp) {
+      //   scene.events.emit(CONFIG.EVENTS.GAME_RESTART);
+      // }
 
-      if (scene.readyToRestart) {
-        if (this.isUpKeyJustUp) {
-          scene.events.emit(CONFIG.EVENTS.GAME_RESTART);
-        }
-      }
+      // if (scene.readyToRestart) {
+      //   if (this.isUpKeyJustUp) {
+      //     scene.events.emit(CONFIG.EVENTS.GAME_RESTART);
+      //   }
+      // }
     }
   }
 
